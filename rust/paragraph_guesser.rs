@@ -19,7 +19,7 @@ pub(crate) static CHAR_LIST: &[char] = &[
 fn to_string(vec: Vec<char>) -> String { vec.iter().collect::<String>() }
 
 fn get_word() -> String {
-	println!("Please enter a word: ");
+	println!("\nPlease enter a word: ");
 	io::stdout().flush().unwrap();
 	let mut word = String::new();
 	io::stdin().read_line(&mut word).unwrap();
@@ -98,11 +98,15 @@ pub fn main() {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
 	use rand::seq::IndexedRandom;
 	use rand::thread_rng;
 
-	fn generate_random_string(length: usize, char_list: &[char]) -> String {
+	use super::*;
+
+	fn generate_random_string(
+		length: usize,
+		char_list: &[char],
+	) -> String {
 		let mut rng = thread_rng();
 		(0..length)
 			.map(|_| *char_list.choose(&mut rng).unwrap())
