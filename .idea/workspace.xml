@@ -8,6 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rust/paragraph_guesser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/paragraph_guesser.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,6 +44,7 @@
     "Cargo.Run + fmt.executor": "Run",
     "Cargo.Run.executor": "Run",
     "Cargo.fmt.executor": "Run",
+    "Cargo.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "git-widget-placeholder": "main",
@@ -92,26 +95,8 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Run" type="CargoCommandRunConfiguration" factoryName="Cargo Command" nameIsGenerated="true">
-      <option name="buildProfileId" value="dev" />
-      <option name="command" value="run" />
-      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <envs />
-      <option name="emulateTerminal" value="true" />
-      <option name="channel" value="DEFAULT" />
-      <option name="requiredFeatures" value="true" />
-      <option name="allFeatures" value="false" />
-      <option name="withSudo" value="false" />
-      <option name="buildTarget" value="REMOTE" />
-      <option name="backtrace" value="SHORT" />
-      <option name="isRedirectInput" value="false" />
-      <option name="redirectInputPath" value="" />
-      <method v="2">
-        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="fmt" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-      <option name="command" value="fmt --all" />
+      <option name="command" value="+nightly fmt --all" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -128,7 +113,6 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Cargo.Run" />
       <item itemvalue="Cargo.Run + fmt" />
       <item itemvalue="Cargo.fmt" />
     </list>
@@ -149,7 +133,7 @@
       <updated>1733342753277</updated>
       <workItem from="1733342754331" duration="4485000" />
       <workItem from="1733352616740" duration="2459000" />
-      <workItem from="1733355460989" duration="16528000" />
+      <workItem from="1733355460989" duration="17337000" />
     </task>
     <servers />
   </component>

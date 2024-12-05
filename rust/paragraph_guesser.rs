@@ -99,16 +99,26 @@ pub fn main() {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use rand::seq::IndexedRandom;
+	use rand::thread_rng;
+
+	fn generate_random_string(length: usize, char_list: &[char]) -> String {
+		let mut rng = thread_rng();
+		(0..length)
+			.map(|_| *char_list.choose(&mut rng).unwrap())
+			.collect()
+	}
+
 	#[test]
 	fn smart_guess_correct() {
-		let word = "hello".to_string();
+		let word = generate_random_string(200, CHAR_LIST);
 		let guessed = smart_guess(word.clone(), CHAR_LIST);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn bogo_guess_correct() {
-		let word = "hello".to_string();
+		let word = generate_random_string(200, CHAR_LIST);
 		let guessed = bogo_guess(word.clone(), CHAR_LIST);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
