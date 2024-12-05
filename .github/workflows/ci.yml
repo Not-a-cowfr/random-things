@@ -3,6 +3,12 @@ name: Rust CI
 on: [ push, pull_request ]
 
 jobs:
+  cargo-file:
+    name: Debug directory structure
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls -R
+
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
