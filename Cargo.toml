@@ -4,15 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-menu_macro = { path = "menu_macro" }
+menu_macro = { path = "rust/macros/menu_macro" }
 
 rand = "0.9.0-alpha.2"
 
 [[bin]]
 name = "random-things"
-path = "src/rust/main.rs"
+path = "rust/main.rs"
 
 [workspace]
 members = [
-    "menu_macro",
+    "rust/macros/menu_macro",
 ]
