@@ -7,13 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/rustfmt.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/menu_macro/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/menu_macro/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rust/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rust/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rust/paragraph_guesser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rust/paragraph_guesser.rs" afterDir="false" />
-    </list>
+    <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -114,7 +108,7 @@
       <updated>1733342753277</updated>
       <workItem from="1733342754331" duration="4485000" />
       <workItem from="1733352616740" duration="2459000" />
-      <workItem from="1733355460989" duration="8278000" />
+      <workItem from="1733355460989" duration="8860000" />
     </task>
     <servers />
   </component>
