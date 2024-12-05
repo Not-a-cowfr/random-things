@@ -8,7 +8,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/rustfmt.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu_macro/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/menu_macro/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rust/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rust/main.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/rust/paragraph_guesser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/rust/paragraph_guesser.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,11 +27,17 @@
       </list>
     </option>
   </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="y3f22guy" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -53,7 +62,7 @@
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
     "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "com.intellij.platform.ide.impl.presentationAssistant.PresentationAssistantConfigurable",
+    "settings.editor.selected.configurable": "actions.on.save",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -91,6 +100,10 @@
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
   </component>
+  <component name="RustfmtProjectSettings">
+    <option name="additionalArguments" value="--version 2021" />
+    <option name="useRustfmt" value="true" />
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -101,7 +114,7 @@
       <updated>1733342753277</updated>
       <workItem from="1733342754331" duration="4485000" />
       <workItem from="1733352616740" duration="2459000" />
-      <workItem from="1733355460989" duration="3240000" />
+      <workItem from="1733355460989" duration="8278000" />
     </task>
     <servers />
   </component>

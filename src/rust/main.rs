@@ -4,9 +4,7 @@ mod paragraph_guesser;
 
 fn main() {
     // displayname, function
-    let modules: Vec<(&str, fn())> = vec![
-        ("Paragraph Guesser", paragraph_guesser::main),
-    ];
+    let modules: Vec<(&str, fn())> = vec![("Paragraph Guesser", paragraph_guesser::main)];
 
     loop {
         println!("\nSelect a module to run:");
@@ -15,7 +13,9 @@ fn main() {
         }
 
         let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Failed to read line");
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
 
         if let Ok(choice) = input.trim().parse::<usize>() {
             if choice > 0 && choice <= modules.len() {

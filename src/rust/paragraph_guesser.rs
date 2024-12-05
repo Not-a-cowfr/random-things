@@ -1,8 +1,8 @@
+use menu_macro::use_in_menu;
+use rand::Rng;
 use std::io;
 use std::io::Write;
 use std::time::Instant;
-use rand::Rng;
-use menu_macro::use_in_menu;
 
 const SHOW_PROGRESS: bool = false; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
 
@@ -21,7 +21,9 @@ fn get_word() -> String {
 fn smart_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     let mut guess: Vec<char> = Vec::new();
     let print_progress = if SHOW_PROGRESS {
-        Some(|guess: &Vec<char>, char: &char| println!("[smart guess]\t{}{}", to_string(guess.clone()), char))
+        Some(|guess: &Vec<char>, char: &char| {
+            println!("[smart guess]\t{}{}", to_string(guess.clone()), char)
+        })
     } else {
         None
     };
@@ -43,7 +45,9 @@ fn smart_guess(word: String, char_list: Vec<char>) -> Vec<char> {
 fn bogo_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     let mut guess: Vec<char> = Vec::new();
     let print_progress = if SHOW_PROGRESS {
-        Some(|guess: &Vec<char>, char: &char| println!("[bogo guess]\t{}{}", to_string(guess.clone()), char))
+        Some(|guess: &Vec<char>, char: &char| {
+            println!("[bogo guess]\t{}{}", to_string(guess.clone()), char)
+        })
     } else {
         None
     };
@@ -66,14 +70,12 @@ fn bogo_guess(word: String, char_list: Vec<char>) -> Vec<char> {
 pub fn main() {
     // sorted in order of most commonly used in text
     let char_list = vec![
-        ' ',
-        'e', 'E', 'a', 'A', 'o', 'O', 'i', 'I', 'u', 'U',
-        't', 'T', 'n', 'N', 's', 'S', 'h', 'H', 'r', 'R', 'd', 'D', 'l', 'L', 'c', 'C', 'm', 'M',
-        '.', ',', '!', '?',
-        'w', 'W', 'f', 'F', 'g', 'G', 'y', 'Y', 'p', 'P', 'b', 'B', 'v', 'V', 'k', 'K', 'x', 'X', 'j', 'J', 'q', 'Q', 'z', 'Z',
-        '\'', '"', '-', ':', ';', '(', ')', '[', ']', '{', '}', '_', '+', '=', '@', '#', '$', '%', '^', '&', '*', '/',
-        '1', '0', '2', '3', '4', '5', '6', '7', '8', '9',
-        '<', '>', '|', '\\', '`', '~'
+        ' ', 'e', 'E', 'a', 'A', 'o', 'O', 'i', 'I', 'u', 'U', 't', 'T', 'n', 'N', 's', 'S', 'h',
+        'H', 'r', 'R', 'd', 'D', 'l', 'L', 'c', 'C', 'm', 'M', '.', ',', '!', '?', 'w', 'W', 'f',
+        'F', 'g', 'G', 'y', 'Y', 'p', 'P', 'b', 'B', 'v', 'V', 'k', 'K', 'x', 'X', 'j', 'J', 'q',
+        'Q', 'z', 'Z', '\'', '"', '-', ':', ';', '(', ')', '[', ']', '{', '}', '_', '+', '=', '@',
+        '#', '$', '%', '^', '&', '*', '/', '1', '0', '2', '3', '4', '5', '6', '7', '8', '9', '<',
+        '>', '|', '\\', '`', '~',
     ];
 
     let word = get_word();
