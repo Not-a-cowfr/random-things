@@ -2,11 +2,16 @@ name: Rust CI
 
 on: [ push, pull_request ]
 
+defaults:
+  run:
+    working-directory: random-things
+
 jobs:
   cargo-file:
     name: Debug directory structure
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - run: ls -R
 
   fmt:
