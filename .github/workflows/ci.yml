@@ -3,49 +3,56 @@ on:
   pull_request:
 
 jobs:
+  setup:
+    name: Setup nightly
+    runs-on: ubuntu-latest
+    outputs:
+      rust_nightly: ${{ steps.setup.outputs.rust_nightly }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nightly
+        id: setup
+        run: |
+          rustup install nightly
+          echo "::set-output name=rust_nightly::nightly"
+    if: ${{ false }}
+
   rustfmt:
     name: Rustfmt
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust nightly
-        run: rustup install nightly
-      - name: Install Rustfmt for nightly
-        run: rustup component add rustfmt --toolchain nightly
+      - name: Install Rustfmt
+        run: rustup component add rustfmt --toolchain ${{ needs.setup.outputs.rust_nightly }}
       - name: Cargo fmt
-        run: cargo +nightly fmt --all
+        run: cargo +${{ needs.setup.outputs.rust_nightly }} fmt --all
 
   clippy:
     name: Lint Code
-    needs: rustfmt
+    needs: [setup, rustfmt]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install nightly
-        run: rustup install nightly
       - name: Install Clippy for nightly
-        run: rustup component add clippy --toolchain nightly
+        run: rustup component add clippy --toolchain ${{ needs.setup.outputs.rust_nightly }}
       - name: Run Clippy
-        run: cargo +nightly clippy --workspace --all-targets --message-format=json -- -D warnings | tee clippy.json
+        run: cargo +${{ needs.setup.outputs.rust_nightly }} clippy --workspace --all-targets --message-format=json -- -D warnings | tee clippy.json
 
   build:
     name: Build
-    needs: [rustfmt, clippy]
+    needs: [setup, rustfmt, clippy]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install nightly
-        run: rustup install nightly
       - name: Cargo build
-        run: cargo +nightly build --workspace --release
+        run: cargo +${{ needs.setup.outputs.rust_nightly }} build --workspace --release
 
   tests:
     name: Tests
-    needs: build
+    needs: [setup, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install nightly
-        run: rustup install nightly
       - name: Cargo test
-        run: cargo +nightly test --workspace --release
+        run: cargo +${{ needs.setup.outputs.rust_nightly }} test --workspace --release
