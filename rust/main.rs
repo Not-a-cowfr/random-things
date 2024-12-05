@@ -13,6 +13,7 @@ fn main() {
 		("Paragraph Guesser", paragraph_guesser::main),
 	];
 
+	#[allow(clippy::type_complexity)]
 	let async_modules: Vec<(&str, fn() -> Pin<Box<dyn Future<Output = ()> + Send>>)> =
 		vec![("Wordle", || Box::pin(wordle::main()))];
 

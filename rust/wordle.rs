@@ -1,8 +1,6 @@
 use std::io;
 use std::io::Write;
 
-use reqwest;
-
 async fn get_word(length: u8) -> String {
 	let url = format!(
 		"https://random-word-api.herokuapp.com/word?number=1&length={}",
