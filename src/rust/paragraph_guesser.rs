@@ -7,6 +7,15 @@ use rand::Rng;
 
 const SHOW_PROGRESS: bool = false; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
 
+// sorted in order of most commonly used in text
+pub(crate) static CHAR_LIST: &[char] = &[
+	' ', 'e', 'E', 'a', 'A', 'o', 'O', 'i', 'I', 'u', 'U', 't', 'T', 'n', 'N', 's', 'S', 'h', 'H',
+	'r', 'R', 'd', 'D', 'l', 'L', 'c', 'C', 'm', 'M', '.', ',', '!', '?', 'w', 'W', 'f', 'F', 'g',
+	'G', 'y', 'Y', 'p', 'P', 'b', 'B', 'v', 'V', 'k', 'K', 'x', 'X', 'j', 'J', 'q', 'Q', 'z', 'Z',
+	'\'', '"', '-', ':', ';', '(', ')', '[', ']', '{', '}', '_', '+', '=', '@', '#', '$', '%', '^',
+	'&', '*', '/', '1', '0', '2', '3', '4', '5', '6', '7', '8', '9', '<', '>', '|', '\\', '`', '~',
+];
+
 fn to_string(vec: Vec<char>) -> String { vec.iter().collect::<String>() }
 
 fn get_word() -> String {
@@ -19,7 +28,7 @@ fn get_word() -> String {
 
 fn smart_guess(
 	word: String,
-	char_list: Vec<char>,
+	local_char_list: &[char],
 ) -> Vec<char> {
 	let mut guess: Vec<char> = Vec::new();
 	let print_progress = if SHOW_PROGRESS {
@@ -31,7 +40,7 @@ fn smart_guess(
 	};
 
 	for character in word.chars() {
-		for char in &char_list {
+		for char in local_char_list {
 			if let Some(print) = &print_progress {
 				print(&guess, char);
 			}
@@ -46,7 +55,7 @@ fn smart_guess(
 
 fn bogo_guess(
 	word: String,
-	char_list: Vec<char>,
+	local_char_list: &[char],
 ) -> Vec<char> {
 	let mut guess: Vec<char> = Vec::new();
 	let print_progress = if SHOW_PROGRESS {
@@ -60,8 +69,8 @@ fn bogo_guess(
 	for character in word.chars() {
 		let mut random_char: char = ' ';
 		while character != random_char {
-			let random_index = rand::thread_rng().gen_range(0..char_list.len());
-			random_char = char_list[random_index];
+			let random_index = rand::thread_rng().gen_range(0..local_char_list.len());
+			random_char = local_char_list[random_index];
 			if let Some(print) = &print_progress {
 				print(&guess, &random_char);
 			}
@@ -73,24 +82,14 @@ fn bogo_guess(
 
 #[use_in_menu]
 pub fn main() {
-	// sorted in order of most commonly used in text
-	let char_list = vec![
-		' ', 'e', 'E', 'a', 'A', 'o', 'O', 'i', 'I', 'u', 'U', 't', 'T', 'n', 'N', 's', 'S', 'h',
-		'H', 'r', 'R', 'd', 'D', 'l', 'L', 'c', 'C', 'm', 'M', '.', ',', '!', '?', 'w', 'W', 'f',
-		'F', 'g', 'G', 'y', 'Y', 'p', 'P', 'b', 'B', 'v', 'V', 'k', 'K', 'x', 'X', 'j', 'J', 'q',
-		'Q', 'z', 'Z', '\'', '"', '-', ':', ';', '(', ')', '[', ']', '{', '}', '_', '+', '=', '@',
-		'#', '$', '%', '^', '&', '*', '/', '1', '0', '2', '3', '4', '5', '6', '7', '8', '9', '<',
-		'>', '|', '\\', '`', '~',
-	];
-
 	let word = get_word();
 
 	let mut start = Instant::now();
-	bogo_guess(word.clone(), char_list.clone());
+	bogo_guess(word.clone(), CHAR_LIST);
 	let bogo_time = start.elapsed();
 
 	start = Instant::now();
-	smart_guess(word.clone(), char_list.clone());
+	smart_guess(word.clone(), CHAR_LIST);
 	let smart_time = start.elapsed();
 
 	println!("\nBogo Guess finished in: {:?}", bogo_time);
