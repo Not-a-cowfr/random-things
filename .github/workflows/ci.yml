@@ -27,11 +27,6 @@ jobs:
         run: rustup component add clippy --toolchain nightly
       - name: Run Clippy
         run: cargo +nightly clippy --workspace --all-targets --message-format=json -- -D warnings | tee clippy.json
-      - name: Install reviewdog
-        run: |
-          curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b /usr/local/bin
-      - name: Run reviewdog
-        run: reviewdog -f=clippy -name="clippy" -reporter=github-pr-check -level=warning < clippy.json
 
   build:
     name: Build
