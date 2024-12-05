@@ -4,7 +4,7 @@ use std::time::Instant;
 use rand::Rng;
 use menu_macro::use_in_menu;
 
-const SHOW_PROGRESS: bool = false; // show progress of guesses (hurts performance of guessing)
+const SHOW_PROGRESS: bool = false; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
 
 fn to_string(vec: Vec<char>) -> String {
     vec.iter().collect::<String>()
@@ -21,7 +21,7 @@ fn get_word() -> String {
 fn smart_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     let mut guess: Vec<char> = Vec::new();
     let print_progress = if SHOW_PROGRESS {
-        Some(|guess: &Vec<char>, char: &char| println!("[smart guess] {}{}", to_string(guess.clone()), char))
+        Some(|guess: &Vec<char>, char: &char| println!("[smart guess]\t{}{}", to_string(guess.clone()), char))
     } else {
         None
     };
@@ -43,7 +43,7 @@ fn smart_guess(word: String, char_list: Vec<char>) -> Vec<char> {
 fn bogo_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     let mut guess: Vec<char> = Vec::new();
     let print_progress = if SHOW_PROGRESS {
-        Some(|guess: &Vec<char>, char: &char| println!("[bogo guess] {}{}", to_string(guess.clone()), char))
+        Some(|guess: &Vec<char>, char: &char| println!("[bogo guess]\t{}{}", to_string(guess.clone()), char))
     } else {
         None
     };
@@ -81,7 +81,6 @@ pub fn main() {
     let mut start = Instant::now();
     bogo_guess(word.clone(), char_list.clone());
     let bogo_time = start.elapsed();
-    println!();
 
     start = Instant::now();
     smart_guess(word.clone(), char_list.clone());
