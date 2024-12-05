@@ -95,3 +95,35 @@ pub fn main() {
 	println!("\nBogo Guess finished in: {:?}", bogo_time);
 	println!("Smart Guess finished in: {:?}", smart_time);
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	#[test]
+	fn smart_guess_correct() {
+		let word = "hello".to_string();
+		let guessed = smart_guess(word.clone(), CHAR_LIST);
+		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
+	}
+
+	#[test]
+	fn bogo_guess_correct() {
+		let word = "hello".to_string();
+		let guessed = bogo_guess(word.clone(), CHAR_LIST);
+		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
+	}
+
+	#[test]
+	fn smart_guess_handles_empty_word() {
+		let word = "".to_string();
+		let guessed = smart_guess(word.clone(), CHAR_LIST);
+		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
+	}
+
+	#[test]
+	fn bogo_guess_handles_empty_word() {
+		let word = "".to_string();
+		let guessed = bogo_guess(word.clone(), CHAR_LIST);
+		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
+	}
+}
