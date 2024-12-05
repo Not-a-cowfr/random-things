@@ -22,10 +22,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install nightly
         run: rustup install nightly
-      - name: Cargo clippy
+      - name: Install Clippy for nightly
+        run: rustup component add clippy --toolchain nightly
+      - name: Cargo Clippy
         run: cargo +nightly clippy --workspace --all-targets -- -D warnings
-        #- name: Cargo test
-        #run: cargo +nightly test --workspace
 
   build:
     name: Build
