@@ -1,7 +1,7 @@
 edition = "2021"
-version = 'Two'
+style_edition = '2024'
 
-fn_args_layout = 'Vertical'
+fn_params_layout = 'Vertical'
 fn_single_line = true
 hard_tabs = true
 hex_literal_case = 'Lower'

@@ -8,25 +8,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Rust nightly
+        run: rustup install nightly
+      - name: Override Rust toolchain to nightly
+        run: rustup override set nightly
       - name: Cargo fmt
-        run: cargo fmt --all -- --check
+        run: cargo +nightly fmt --all
 
   clippy:
     name: Lint Rust code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Rust nightly
+        run: rustup install nightly
+      - name: Override Rust toolchain to nightly
+        run: rustup override set nightly
       - name: Cargo fmt
-        run: cargo fmt --all -- --check
+        run: cargo +nightly fmt --all -- --check
       - name: Cargo clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo +nightly clippy --workspace --all-targets -- -D warnings
       - name: Cargo test
-        run: cargo test --workspace
+        run: cargo +nightly test --workspace
 
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Rust nightly
+        run: rustup install nightly
+      - name: Override Rust toolchain to nightly
+        run: rustup override set nightly
       - name: Cargo build
-        run: cargo build --workspace --release
+        run: cargo +nightly build --workspace --release
