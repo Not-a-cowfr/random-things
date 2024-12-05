@@ -1,17 +1,13 @@
-/*
-    * A rust remake of something i mdea many years ago in python
-    * would be cool to make something that takes multiple paragraphs of input, and sorts the char_list based on real data of character frequency
- */
-
 use std::io;
 use std::io::Write;
 use std::time::Instant;
 use rand::Rng;
+use menu_macro::use_in_menu;
 
-const SHOW_PROGRESS: bool = false;
+const SHOW_PROGRESS: bool = false; // show progress of guesses (hurts performance of guessing)
 
-fn to_string(vec:Vec<char>) -> String{
-    return vec.iter().collect::<String>();
+fn to_string(vec: Vec<char>) -> String {
+    vec.iter().collect::<String>()
 }
 
 fn get_word() -> String {
@@ -24,9 +20,17 @@ fn get_word() -> String {
 
 fn smart_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     let mut guess: Vec<char> = Vec::new();
+    let print_progress = if SHOW_PROGRESS {
+        Some(|guess: &Vec<char>, char: &char| println!("[smart guess] {}{}", to_string(guess.clone()), char))
+    } else {
+        None
+    };
+
     for character in word.chars() {
         for char in &char_list {
-            if SHOW_PROGRESS {println!("[smart guess] {}{}", to_string(guess.clone()), char);}
+            if let Some(print) = &print_progress {
+                print(&guess, char);
+            }
             if character == *char {
                 guess.push(character);
                 break;
@@ -36,23 +40,30 @@ fn smart_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     guess
 }
 
-
 fn bogo_guess(word: String, char_list: Vec<char>) -> Vec<char> {
     let mut guess: Vec<char> = Vec::new();
+    let print_progress = if SHOW_PROGRESS {
+        Some(|guess: &Vec<char>, char: &char| println!("[bogo guess] {}{}", to_string(guess.clone()), char))
+    } else {
+        None
+    };
+
     for character in word.chars() {
         let mut random_char: char = ' ';
         while character != random_char {
             let random_index = rand::thread_rng().gen_range(0..char_list.len());
             random_char = char_list[random_index];
-            if SHOW_PROGRESS {println!("[bogo guess] {}{}", to_string(guess.clone()), random_char);}
+            if let Some(print) = &print_progress {
+                print(&guess, &random_char);
+            }
         }
         guess.push(random_char);
     }
     guess
 }
 
-pub(crate) fn main() {
-
+#[use_in_menu]
+pub fn main() {
     // sorted in order of most commonly used in text
     let char_list = vec![
         ' ',
