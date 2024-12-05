@@ -1,76 +1,32 @@
 on:
-  pull_request:
   push:
-    branches:
-      - main
-
-name: Check and Lint
-
-permissions:
-  contents: write
-  actions: write
-  pull-requests: write
-  issues: read
-  checks: write
+  pull_request:
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-
-  fmt:
+  rustfmt:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - run: rustup component add rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - uses: actions/checkout@v4
+      - name: Cargo fmt
+        run: cargo fmt --all -- --check
 
   clippy:
-    name: Clippy
+    name: Lint Rust code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: clippy
-          override: true
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
-          name: Clippy Output
+      - uses: actions/checkout@v4
+      - name: Cargo fmt
+        run: cargo fmt --all -- --check
+      - name: Cargo clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Cargo test
+        run: cargo test --workspace
 
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --manifest-path Cargo.toml
+      - uses: actions/checkout@v4
+      - name: Cargo build
+        run: cargo build --workspace --release
