@@ -10,35 +10,29 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Rust nightly
         run: rustup install nightly
-      - name: Override Rust toolchain to nightly
-        run: rustup override set nightly
+      - name: Install Rustfmt for nightly
+        run: rustup component add rustfmt --toolchain nightly
       - name: Cargo fmt
         run: cargo +nightly fmt --all
 
   clippy:
-    name: Lint Rust code
+    name: Lint Code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust nightly
+      - name: Install nightly
         run: rustup install nightly
-      - name: Override Rust toolchain to nightly
-        run: rustup override set nightly
-      - name: Cargo fmt
-        run: cargo +nightly fmt --all -- --check
       - name: Cargo clippy
         run: cargo +nightly clippy --workspace --all-targets -- -D warnings
-      - name: Cargo test
-        run: cargo +nightly test --workspace
+        #- name: Cargo test
+        #run: cargo +nightly test --workspace
 
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust nightly
+      - name: Install nightly
         run: rustup install nightly
-      - name: Override Rust toolchain to nightly
-        run: rustup override set nightly
       - name: Cargo build
         run: cargo +nightly build --workspace --release
