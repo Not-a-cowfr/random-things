@@ -13,9 +13,9 @@ jobs:
       - name: Install nightly
         id: setup
         run: |
-          rustup install nightly
+          rustup install nightly > /dev/null 2>&1
           echo "::set-output name=rust_nightly::nightly"
-    if: ${{ false }}
+    continue-on-error: true
 
   rustfmt:
     name: Rustfmt
