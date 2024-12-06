@@ -78,33 +78,30 @@ fn calculate_accuracy(
 
 fn calculate_wpm(
 	duration: Duration,
-	input_len: usize,
-) -> f64 {
+	input: &str,
+) -> (f64, usize) {
 	let minutes = duration.as_secs_f64() / 60.0;
-	(input_len as f64 / 5.0) / minutes
+	let word_count = input.split_whitespace().count();
+	let wpm = word_count as f64 / minutes;
+	(wpm, word_count)
 }
 
 pub fn main() {
 	enable_raw_mode().unwrap();
 	let mut stdout = io::stdout();
-	let predefined = get_phrase().chars().collect::<Vec<_>>();
+	let phrase = get_phrase().chars().collect::<Vec<_>>();
 	let mut input = String::new();
 	let mut correct_count = 0;
 	let mut incorrect_count = 0;
 	let mut total_keystrokes = 0;
 
-	write!(
-		stdout,
-		"\n\r\x1b[2K{}",
-		predefined.iter().collect::<String>()
-	)
-	.unwrap();
+	write!(stdout, "\n\r\x1b[2K{}", phrase.iter().collect::<String>()).unwrap();
 	stdout.flush().unwrap();
 
 	let start_time = Instant::now();
 
 	loop {
-		if event::poll(std::time::Duration::from_millis(500)).unwrap() {
+		if event::poll(Duration::from_millis(500)).unwrap() {
 			if let Event::Key(key_event) = event::read().unwrap() {
 				if key_event.kind == KeyEventKind::Press {
 					match key_event.code {
@@ -112,7 +109,7 @@ pub fn main() {
 							input.push(c);
 							process_input(
 								&input,
-								&predefined,
+								&phrase,
 								&mut stdout,
 								&mut correct_count,
 								&mut incorrect_count,
@@ -123,7 +120,7 @@ pub fn main() {
 							input.pop();
 							process_input(
 								&input,
-								&predefined,
+								&phrase,
 								&mut stdout,
 								&mut correct_count,
 								&mut incorrect_count,
@@ -139,14 +136,14 @@ pub fn main() {
 			}
 		}
 
-		if input.len() >= predefined.len() {
+		if input.len() >= phrase.len() {
 			break;
 		}
 	}
 
 	let duration = start_time.elapsed();
 	let accuracy = calculate_accuracy(correct_count, total_keystrokes);
-	let wpm = calculate_wpm(duration, input.len());
+	let (wpm, _word_count) = calculate_wpm(duration, &input);
 
 	disable_raw_mode().unwrap();
 
