@@ -1,5 +1,8 @@
 on:
   push:
+    paths:
+      - '**/*.rs'
+      - '**/*.toml'
 
 jobs:
   rustfmt:
