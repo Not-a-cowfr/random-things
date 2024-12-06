@@ -4,36 +4,20 @@ use std::pin::Pin;
 
 use tokio::runtime::Runtime;
 
+mod mc_renderer;
 mod paragraph_guesser;
 mod wordle;
 
-fn generate_feature_list(
-	modules: &[&str],
-	async_modules: &[&str],
-) -> String {
-	let mut features = String::from("## Features\n");
-	for module in modules {
-		features.push_str(&format!("- {}\n", module));
-	}
-	for module in async_modules {
-		features.push_str(&format!("- {}\n", module));
-	}
-	features
-}
-
-fn main() {
+pub fn main() {
 	// displayname, function
-	let modules: Vec<(&str, fn())> = vec![("Paragraph Guesser", paragraph_guesser::main)];
+	let modules: Vec<(&str, fn())> = vec![
+		("Paragraph Guesser", paragraph_guesser::main),
+		("Minecraft Text renderer", mc_renderer::main),
+	];
 
 	#[allow(clippy::type_complexity)]
 	let async_modules: Vec<(&str, fn() -> Pin<Box<dyn Future<Output = ()> + Send>>)> =
 		vec![("Wordle", || Box::pin(wordle::main()))];
-
-	let module_names: Vec<&str> = modules.iter().map(|(name, _)| *name).collect();
-	let async_module_names: Vec<&str> = async_modules.iter().map(|(name, _)| *name).collect();
-
-	let feature_list = generate_feature_list(&module_names, &async_module_names);
-	println!("{}", feature_list);
 
 	loop {
 		println!("\nSelect a module to run:");
