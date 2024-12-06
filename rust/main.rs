@@ -4,13 +4,15 @@ use std::pin::Pin;
 
 use tokio::runtime::Runtime;
 
+mod mc_renderer;
 mod paragraph_guesser;
 mod wordle;
 
-fn main() {
+pub fn main() {
 	// displayname, function
 	let modules: Vec<(&str, fn())> = vec![
 		("Paragraph Guesser", paragraph_guesser::main),
+		("Minecraft Text renderer", mc_renderer::main),
 	];
 
 	#[allow(clippy::type_complexity)]
