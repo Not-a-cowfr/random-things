@@ -1,0 +1,5 @@
+## Whats this?
+this is just a repo where i can make a bunch of tiny projects that i can use to learn new things
+
+## Todo
+ - [ ] correctly implement bold, italic, strikethrough and underline formatting codes
