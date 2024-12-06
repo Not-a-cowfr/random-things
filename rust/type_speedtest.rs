@@ -151,3 +151,59 @@ pub fn main() {
 	println!("Accuracy: {:.2}%", accuracy);
 	println!("WPM: {:.2}", wpm);
 }
+
+#[cfg(test)]
+mod tests {
+	use std::time::Duration;
+
+	use super::*;
+
+	#[test]
+	fn get_phrase_works() {
+		let phrase = get_phrase();
+		assert!(!phrase.is_empty());
+	}
+
+	#[test]
+	fn check_accuracy() {
+		let accuracy1 = calculate_accuracy(10, 20);
+		let accuracy2 = calculate_accuracy(0, 100);
+		let accuracy3 = calculate_accuracy(100, 100);
+		assert_eq!(accuracy1, 50.0);
+		assert_eq!(accuracy2, 0.0);
+		assert_eq!(accuracy3, 100.0);
+	}
+
+	#[test]
+	fn accuracy_handles_zero_input() {
+		let correct_count = 0;
+		let total_keystrokes = 0;
+		let accuracy = calculate_accuracy(correct_count, total_keystrokes);
+		assert_eq!(accuracy, 0.0);
+	}
+
+	#[test]
+	fn check_wpm() {
+		let duration = Duration::from_secs(60);
+		let (wpm, _length) = calculate_wpm(duration, "This is a test sentence that has nine words");
+		assert_eq!(wpm, 9.0);
+	}
+
+	#[test]
+	fn wpm_handles_zero_duration() {
+		let duration = Duration::from_secs(0);
+		let (wpm, _length) =
+			calculate_wpm(duration, "This is a test sentence that has ten words (wtf)");
+		assert!(wpm.is_infinite());
+	}
+
+	#[test]
+	fn check_wpm_wordcount() {
+		let duration = Duration::from_secs(60);
+		let (wpm, _length) = calculate_wpm(
+			duration,
+			"This is a test sentence that has TWELVE words (WTF IS HAPPENING)",
+		);
+		assert_eq!(wpm, 12.0);
+	}
+}
