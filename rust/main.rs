@@ -6,13 +6,15 @@ use tokio::runtime::Runtime;
 
 mod mc_renderer;
 mod paragraph_guesser;
+mod type_speedtest;
 mod wordle;
 
 pub fn main() {
 	// displayname, function
 	let modules: Vec<(&str, fn())> = vec![
 		("Paragraph Guesser", paragraph_guesser::main),
-		("Minecraft Text renderer", mc_renderer::main),
+		("Minecraft Text Renderer", mc_renderer::main),
+		("Typing Speed Test", type_speedtest::main),
 	];
 
 	#[allow(clippy::type_complexity)]
@@ -22,10 +24,10 @@ pub fn main() {
 	loop {
 		println!("\nSelect a module to run:");
 		for (i, (name, _)) in modules.iter().enumerate() {
-			println!("{}: {}", i + 1, name);
+			println!("[{}] {}", i + 1, name);
 		}
 		for (i, (name, _)) in async_modules.iter().enumerate() {
-			println!("{}: {}", i + 1 + modules.len(), name);
+			println!("[{}] {}", i + 1 + modules.len(), name);
 		}
 
 		let mut input = String::new();
