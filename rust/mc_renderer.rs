@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use std::io;
+use std::time::Duration;
+use std::{io, thread};
 
 use arboard::{Clipboard, ImageData};
 use image::buffer::ConvertBuffer;
@@ -110,9 +111,18 @@ fn render_text(
 		bytes: std::borrow::Cow::Owned(bytes),
 	};
 
-	let mut clipboard = Clipboard::new().unwrap();
-	clipboard.set_image(image_data).unwrap();
-	println!("Image copied to clipboard");
+	let mut retries = 5;
+	while retries > 0 {
+		let clipboard = Clipboard::new();
+		if let Ok(mut clipboard) = clipboard {
+			if clipboard.set_image(image_data.clone()).is_ok() {
+				println!("Image copied to clipboard");
+				break;
+			}
+		}
+		retries -= 1;
+		thread::sleep(Duration::from_millis(100));
+	}
 
 	image.clone()
 }
@@ -177,8 +187,6 @@ pub fn main() {
 
 #[cfg(test)]
 mod tests {
-	use std::collections::HashMap;
-
 	use image::{Rgb, RgbImage};
 
 	use super::*;
