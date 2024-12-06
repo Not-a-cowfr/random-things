@@ -2,10 +2,9 @@ use std::io;
 use std::io::Write;
 use std::time::Instant;
 
-use menu_macro::use_in_menu;
 use rand::Rng;
 
-const SHOW_PROGRESS: bool = false; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
+const SHOW_PROGRESS: bool = true; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
 
 // sorted in order of most commonly used in text
 pub(crate) static CHAR_LIST: &[char] = &[
@@ -80,7 +79,6 @@ fn bogo_guess(
 	guess
 }
 
-#[use_in_menu]
 pub fn main() {
 	let word = get_word();
 
