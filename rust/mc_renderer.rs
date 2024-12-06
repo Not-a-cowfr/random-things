@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::io;
 
-use image::{Rgb, RgbImage, open};
+use arboard::{Clipboard, ImageData};
+use image::buffer::ConvertBuffer;
+use image::{Rgb, RgbImage, RgbaImage, open};
 use rusttype::{Font, Scale, point};
 
 fn render_text(
@@ -94,6 +96,24 @@ fn render_text(
 	}
 
 	image.save("output.png").expect("Failed to save image");
+
+	// convert RgbImage to RgbaImage
+	let rgba_image: RgbaImage = image.convert();
+
+	// convert RgbaImage to ImageData
+	let width = rgba_image.width() as usize;
+	let height = rgba_image.height() as usize;
+	let bytes = rgba_image.into_raw();
+	let image_data = ImageData {
+		width,
+		height,
+		bytes: std::borrow::Cow::Owned(bytes),
+	};
+
+	let mut clipboard = Clipboard::new().unwrap();
+	clipboard.set_image(image_data).unwrap();
+	println!("Image copied to clipboard");
+
 	image.clone()
 }
 

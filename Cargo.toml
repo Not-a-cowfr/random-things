@@ -12,6 +12,7 @@ serde = { version = "1.0.215", features = ["derive"] }
 tokio = { version = "1.42.0", features = ["rt-multi-thread"] }
 image = {  version = "0.25.5", features = ["png"] }
 rusttype = "0.9.3"
+arboard = "3.4.1"
 
 [[bin]]
 name = "random-things"
