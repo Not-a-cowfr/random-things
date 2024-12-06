@@ -7,16 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/background.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/minecraft.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rust/mc_renderer.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/release.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/main.rs" afterDir="false" />
-    </list>
+    <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

@@ -1,7 +1,10 @@
 use std::collections::HashMap;
-use std::io;
+use std::time::Duration;
+use std::{io, thread};
 
-use image::{Rgb, RgbImage, open};
+use arboard::{Clipboard, ImageData};
+use image::buffer::ConvertBuffer;
+use image::{Rgb, RgbImage, RgbaImage, open};
 use rusttype::{Font, Scale, point};
 
 fn render_text(
@@ -94,6 +97,33 @@ fn render_text(
 	}
 
 	image.save("output.png").expect("Failed to save image");
+
+	// convert RgbImage to RgbaImage
+	let rgba_image: RgbaImage = image.convert();
+
+	// convert RgbaImage to ImageData
+	let width = rgba_image.width() as usize;
+	let height = rgba_image.height() as usize;
+	let bytes = rgba_image.into_raw();
+	let image_data = ImageData {
+		width,
+		height,
+		bytes: std::borrow::Cow::Owned(bytes),
+	};
+
+	let mut retries = 5;
+	while retries > 0 {
+		let clipboard = Clipboard::new();
+		if let Ok(mut clipboard) = clipboard {
+			if clipboard.set_image(image_data.clone()).is_ok() {
+				println!("Image copied to clipboard");
+				break;
+			}
+		}
+		retries -= 1;
+		thread::sleep(Duration::from_millis(100));
+	}
+
 	image.clone()
 }
 
@@ -157,8 +187,6 @@ pub fn main() {
 
 #[cfg(test)]
 mod tests {
-	use std::collections::HashMap;
-
 	use image::{Rgb, RgbImage};
 
 	use super::*;
