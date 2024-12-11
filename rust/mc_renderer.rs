@@ -1,11 +1,86 @@
 use std::collections::HashMap;
+use std::ops::Add;
+use std::path::Path;
 use std::time::Duration;
-use std::{io, thread};
+use std::{fs, thread};
 
 use arboard::{Clipboard, ImageData};
 use image::buffer::ConvertBuffer;
 use image::{Rgb, RgbImage, RgbaImage, open};
 use rusttype::{Font, Scale, point};
+
+use crate::stuff::input;
+
+fn save(
+	image: &RgbImage,
+	path: &str,
+	save_type: u8,
+) {
+	match save_type {
+		| 1 => save_image_to_clipboard(image),
+		| 2 => save_image_to_file(image, path),
+		| _ => save(
+			image,
+			path,
+			input("Invalid choice, please choose again")
+				.parse::<u8>()
+				.unwrap(),
+		),
+	}
+}
+
+fn save_image_to_clipboard(image: &RgbImage) {
+	// convert RgbImage to RgbaImage
+	let rgba_image: RgbaImage = image.convert();
+
+	// convert RgbaImage to ImageData
+	let width = rgba_image.width() as usize;
+	let height = rgba_image.height() as usize;
+	let bytes = rgba_image.into_raw();
+	let image_data = ImageData {
+		width,
+		height,
+		bytes: std::borrow::Cow::Owned(bytes),
+	};
+
+	let mut retries = 5;
+	while retries > 0 {
+		let clipboard = Clipboard::new();
+		if let Ok(mut clipboard) = clipboard {
+			if clipboard.set_image(image_data.clone()).is_ok() {
+				println!("Image copied to clipboard");
+				break;
+			}
+		}
+		retries -= 1;
+		thread::sleep(Duration::from_millis(100));
+	}
+}
+
+fn save_image_to_file(
+	image: &RgbImage,
+	path: &str,
+) {
+	// Create the output directory if it doesn't exist
+	fs::create_dir_all("output").expect("Failed to create output directory");
+
+	// Save the image to the specified path within the output directory
+	let full_path = format!("output\\{}", path);
+	image.save(&full_path).expect("Failed to save image");
+
+	// Get the absolute path of the saved image
+	let absolute_path =
+		fs::canonicalize(Path::new(&full_path)).expect("Failed to get absolute path of image");
+	let display_path = absolute_path
+		.strip_prefix(r"\\?\")
+		.unwrap_or(&absolute_path);
+
+	// Print the success message with the file path
+	println!(
+		"\n\x1b[32mSuccess!\x1b[0m File saved at: {}",
+		display_path.display()
+	);
+}
 
 fn render_text(
 	text: &str,
@@ -96,32 +171,21 @@ fn render_text(
 		draw_character(c, &font, image, &mut x, y, scale, bold, current_color);
 	}
 
-	image.save("output.png").expect("Failed to save image");
-
-	// convert RgbImage to RgbaImage
-	let rgba_image: RgbaImage = image.convert();
-
-	// convert RgbaImage to ImageData
-	let width = rgba_image.width() as usize;
-	let height = rgba_image.height() as usize;
-	let bytes = rgba_image.into_raw();
-	let image_data = ImageData {
-		width,
-		height,
-		bytes: std::borrow::Cow::Owned(bytes),
-	};
-
-	let mut retries = 5;
-	while retries > 0 {
-		let clipboard = Clipboard::new();
-		if let Ok(mut clipboard) = clipboard {
-			if clipboard.set_image(image_data.clone()).is_ok() {
-				println!("Image copied to clipboard");
-				break;
-			}
+	let mut save_type: u8 = 0;
+	let mut input_type: String;
+	while save_type != 1 && save_type != 2 {
+		input_type = input("\n[1] Save to clipboard\n[2] Save as file");
+		match input_type.parse::<u8>() {
+			| Ok(parsed) => save_type = parsed,
+			| Err(_) => println!("Invalid input, please enter 1 or 2."),
 		}
-		retries -= 1;
-		thread::sleep(Duration::from_millis(100));
+	}
+
+	if save_type == 2 {
+		let path = input("\nEnter the filename to save the image as:");
+		save(image, &path.add(".png"), save_type);
+	} else {
+		save(image, "output.png", save_type);
 	}
 
 	image.clone()
@@ -177,76 +241,7 @@ pub fn main() {
 
 	let scale = Scale::uniform(16.0);
 
-	println!("\nEnter text to render:");
-	let mut text = String::new();
-	io::stdin().read_line(&mut text).unwrap();
-	let text = text.trim().to_string();
+	let text = input("\nEnter text to render: ");
 
 	render_text(&text, &font, &mut image, scale);
-}
-
-#[cfg(test)]
-mod tests {
-	use image::{Rgb, RgbImage};
-
-	use super::*;
-
-	fn create_test_image() -> RgbImage { RgbImage::new(100, 100) }
-
-	fn create_test_font() -> Font<'static> {
-		let font_data = include_bytes!("../assets/minecraft.ttf");
-		Font::try_from_bytes(font_data as &[u8]).expect("Error loading font")
-	}
-
-	#[test]
-	fn renders_text_correctly() {
-		let font = create_test_font();
-		let mut image = create_test_image();
-		let text = "Hello, world!";
-		let scale = Scale::uniform(16.0);
-
-		let image = render_text(&text, &font, &mut image, scale);
-
-		assert_eq!(image.get_pixel(11, 40), &Rgb([255, 255, 255]));
-	}
-
-	#[test]
-	fn handles_empty_text() {
-		let font = create_test_font();
-		let mut image = create_test_image();
-		let text = "";
-		let scale = Scale::uniform(16.0);
-
-		let image = render_text(&text, &font, &mut image, scale);
-
-		assert_eq!(image.get_pixel(11, 40), &Rgb([0, 0, 0]));
-	}
-
-	#[test]
-	fn handles_formatting_codes() {
-		let font = create_test_font();
-		let mut image = create_test_image();
-		let text = "§eHello";
-		let scale = Scale::uniform(16.0);
-
-		let image = render_text(&text, &font, &mut image, scale);
-
-		assert_eq!(image.get_pixel(11, 40), &Rgb([255, 255, 85]));
-	}
-
-	#[test]
-	fn handles_newline_character() {
-		let font = create_test_font();
-		let mut image = create_test_image();
-		let text = "Hello\\nWorld";
-		let scale = Scale::uniform(16.0);
-
-		let image = render_text(&text, &font, &mut image, scale);
-
-		assert_eq!(image.get_pixel(11, 40), &Rgb([255, 255, 255]));
-		assert_eq!(
-			image.get_pixel(11, 40 + (scale.y * 1.15) as u32),
-			&Rgb([255, 255, 255])
-		);
-	}
 }

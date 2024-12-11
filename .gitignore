@@ -4,4 +4,4 @@ target/
 *.pdb
 *.db
 *.env
-output.png
+output/

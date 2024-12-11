@@ -1,6 +1,8 @@
 use std::io;
 use std::io::Write;
 
+use crate::stuff::input;
+
 async fn get_word(length: u8) -> String {
 	let url = format!(
 		"https://random-word-api.herokuapp.com/word?number=1&length={}",
@@ -63,19 +65,17 @@ pub async fn main() {
 
 	println!("\nEnter your guess:");
 	loop {
-		let mut guess = String::new();
-		io::stdin().read_line(&mut guess).unwrap();
-		let guess = guess.trim().to_string();
+		let guess = input("");
 
 		print!("\x1b[1A\x1b[2K");
-		io::stdout().flush().unwrap(); // delete user input from stdout
+		io::stdout().flush().unwrap();
 
 		let result = process_guess(&word, &guess, &mut guess_count);
-		println!("{}", result);
+		print!("{}", result);
 
 		if guess == word {
 			println!(
-				"Congratulations! You guessed the word in {} attempts",
+				"\nCongratulations! You guessed the word in {} attempts",
 				guess_count
 			);
 			break;

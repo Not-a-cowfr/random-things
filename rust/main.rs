@@ -1,11 +1,13 @@
 use std::future::Future;
-use std::io;
 use std::pin::Pin;
 
 use tokio::runtime::Runtime;
 
+use crate::stuff::input;
+
 mod mc_renderer;
 mod paragraph_guesser;
+mod stuff;
 mod type_speedtest;
 mod wordle;
 
@@ -30,10 +32,7 @@ pub fn main() {
 			println!("[{}] {}", i + 1 + modules.len(), name);
 		}
 
-		let mut input = String::new();
-		io::stdin()
-			.read_line(&mut input)
-			.expect("Failed to read line");
+		let input = input("");
 
 		if let Ok(choice) = input.trim().parse::<usize>() {
 			if choice > 0 && choice <= modules.len() {

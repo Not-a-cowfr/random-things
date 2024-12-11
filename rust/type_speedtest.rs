@@ -7,22 +7,25 @@ use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use rand::seq::IndexedRandom;
 use serde::Deserialize;
 
+#[allow(dead_code)]
 #[derive(Deserialize)]
 struct Quote {
-	text:   String,
+	text:    String,
 	source: String,
 	length: usize,
 	id:     usize,
 }
 
+#[allow(dead_code)]
 #[derive(Deserialize)]
 struct Phrases {
 	language: String,
 	groups:   Vec<(usize, usize)>,
-	quotes:   Vec<Quote>,
+	quotes:    Vec<Quote>,
 }
 
 fn get_phrase() -> String {
+	// TODO make api and use api to get phrases
 	let file = File::open("assets/phrases.json").expect("Failed to open phrases.json");
 	let reader = BufReader::new(file);
 	let phrases: Phrases = serde_json::from_reader(reader).expect("Failed to parse JSON");
@@ -115,6 +118,7 @@ pub fn main() {
 								&mut incorrect_count,
 								&mut total_keystrokes,
 							);
+							stdout.flush().unwrap();
 						},
 						| KeyCode::Backspace => {
 							input.pop();
@@ -126,11 +130,15 @@ pub fn main() {
 								&mut incorrect_count,
 								&mut total_keystrokes,
 							);
+							stdout.flush().unwrap();
 						},
 						| KeyCode::Esc => {
+							stdout.flush().unwrap();
 							break;
 						},
-						| _ => {},
+						| _ => {
+							stdout.flush().unwrap();
+						},
 					}
 				}
 			}

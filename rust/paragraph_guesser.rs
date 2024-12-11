@@ -1,10 +1,8 @@
-use std::io;
-use std::io::Write;
 use std::time::Instant;
 
 use rand::Rng;
 
-const SHOW_PROGRESS: bool = true; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
+use crate::stuff::input;
 
 // sorted in order of most commonly used in text
 pub(crate) static CHAR_LIST: &[char] = &[
@@ -17,20 +15,13 @@ pub(crate) static CHAR_LIST: &[char] = &[
 
 fn to_string(vec: Vec<char>) -> String { vec.iter().collect::<String>() }
 
-fn get_word() -> String {
-	println!("\nPlease enter a word: ");
-	io::stdout().flush().unwrap();
-	let mut word = String::new();
-	io::stdin().read_line(&mut word).unwrap();
-	word.trim().to_string()
-}
-
 fn smart_guess(
 	word: String,
 	local_char_list: &[char],
+	show_progress: bool,
 ) -> Vec<char> {
 	let mut guess: Vec<char> = Vec::new();
-	let print_progress = if SHOW_PROGRESS {
+	let print_progress = if show_progress {
 		Some(|guess: &Vec<char>, char: &char| {
 			println!("[smart guess]\t{}{}", to_string(guess.clone()), char)
 		})
@@ -55,9 +46,10 @@ fn smart_guess(
 fn bogo_guess(
 	word: String,
 	local_char_list: &[char],
+	show_progress: bool,
 ) -> Vec<char> {
 	let mut guess: Vec<char> = Vec::new();
-	let print_progress = if SHOW_PROGRESS {
+	let print_progress = if show_progress {
 		Some(|guess: &Vec<char>, char: &char| {
 			println!("[bogo guess]\t{}{}", to_string(guess.clone()), char)
 		})
@@ -80,14 +72,30 @@ fn bogo_guess(
 }
 
 pub fn main() {
-	let word = get_word();
+	let mut show_progress: bool = true; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
+	let word = input("\nEnter a phrase: ");
+
+	let mut save_type: u8 = 0;
+	let mut input_type: String;
+	while save_type != 1 && save_type != 2 {
+		input_type = input("\n[1] Show Progress (slow)\n[2] Hide progress (fast)");
+		match input_type.parse::<u8>() {
+			| Ok(parsed) => save_type = parsed,
+			| Err(_) => println!("Invalid input, please enter 1 or 2."),
+		}
+		match save_type {
+			| 1 => show_progress = true,
+			| 2 => show_progress = false,
+			| _ => show_progress = false,
+		}
+	}
 
 	let mut start = Instant::now();
-	bogo_guess(word.clone(), CHAR_LIST);
+	bogo_guess(word.clone(), CHAR_LIST, show_progress);
 	let bogo_time = start.elapsed();
 
 	start = Instant::now();
-	smart_guess(word.clone(), CHAR_LIST);
+	smart_guess(word.clone(), CHAR_LIST, show_progress);
 	let smart_time = start.elapsed();
 
 	println!("\nBogo Guess finished in: {:?}", bogo_time);
@@ -114,28 +122,28 @@ mod tests {
 	#[test]
 	fn smart_guess_correct() {
 		let word = generate_random_string(200, CHAR_LIST);
-		let guessed = smart_guess(word.clone(), CHAR_LIST);
+		let guessed = smart_guess(word.clone(), CHAR_LIST, false);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn bogo_guess_correct() {
 		let word = generate_random_string(200, CHAR_LIST);
-		let guessed = bogo_guess(word.clone(), CHAR_LIST);
+		let guessed = bogo_guess(word.clone(), CHAR_LIST, false);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn smart_guess_handles_empty_word() {
 		let word = "".to_string();
-		let guessed = smart_guess(word.clone(), CHAR_LIST);
+		let guessed = smart_guess(word.clone(), CHAR_LIST, false);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn bogo_guess_handles_empty_word() {
 		let word = "".to_string();
-		let guessed = bogo_guess(word.clone(), CHAR_LIST);
+		let guessed = bogo_guess(word.clone(), CHAR_LIST, false);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 }
