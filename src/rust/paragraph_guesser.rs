@@ -2,6 +2,7 @@ use std::time::Instant;
 
 use rand::Rng;
 
+use crate::main;
 use crate::stuff::{input, menu};
 
 // sorted in order of most commonly used in text
@@ -71,7 +72,7 @@ fn bogo_guess(
 	guess
 }
 
-pub fn main() {
+pub fn start() {
 	let show_progress: bool; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
 	let word = input("\nEnter a phrase:", true);
 
@@ -92,6 +93,8 @@ pub fn main() {
 
 	println!("\nBogo Guess finished in: {:?}", bogo_time);
 	println!("Smart Guess finished in: {:?}", smart_time);
+
+	main()
 }
 
 #[cfg(test)]

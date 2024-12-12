@@ -7,6 +7,8 @@ use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use rand::seq::IndexedRandom;
 use serde::Deserialize;
 
+use crate::main;
+
 #[allow(dead_code)]
 #[derive(Deserialize)]
 struct Quote {
@@ -89,7 +91,7 @@ fn calculate_wpm(
 	(wpm, word_count)
 }
 
-pub fn main() {
+pub fn start() {
 	enable_raw_mode().unwrap();
 	let mut stdout = io::stdout();
 	let phrase = get_phrase().chars().collect::<Vec<_>>();
@@ -143,6 +145,7 @@ pub fn main() {
 				}
 			}
 		}
+		stdout.flush().unwrap();
 
 		if input.len() >= phrase.len() {
 			break;
@@ -158,6 +161,8 @@ pub fn main() {
 	println!("\nTime taken: {:.2?}", duration);
 	println!("Accuracy: {:.2}%", accuracy);
 	println!("WPM: {:.2}", wpm);
+
+	main()
 }
 
 #[cfg(test)]

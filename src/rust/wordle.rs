@@ -1,6 +1,7 @@
 use std::io;
 use std::io::Write;
 
+use crate::main;
 use crate::stuff::input;
 
 async fn get_word(length: u8) -> String {
@@ -59,7 +60,7 @@ fn process_guess(
 		.collect::<String>()
 }
 
-pub async fn main() {
+pub async fn start() {
 	let word: String = get_word(5).await;
 	let mut guess_count: u16 = 0;
 
@@ -81,6 +82,8 @@ pub async fn main() {
 			break;
 		}
 	}
+
+	main()
 }
 
 #[cfg(test)]

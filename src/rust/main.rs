@@ -12,16 +12,16 @@ mod type_speedtest;
 mod wordle;
 
 pub fn main() {
-	// displayname, function
+	// display name, function
 	let modules: Vec<(&str, fn())> = vec![
-		("Paragraph Guesser", paragraph_guesser::main),
-		("Minecraft Text Renderer", mc_renderer::main),
-		("Typing Speed Test", type_speedtest::main),
+		("Paragraph Guesser", paragraph_guesser::start),
+		("Minecraft Text Renderer", mc_renderer::start),
+		("Typing Speed Test", type_speedtest::start),
 	];
 
 	#[allow(clippy::type_complexity)]
 	let async_modules: Vec<(&str, fn() -> Pin<Box<dyn Future<Output = ()> + Send>>)> =
-		vec![("Wordle", || Box::pin(wordle::main()))];
+		vec![("Wordle", || Box::pin(wordle::start()))];
 
 	loop {
 		println!("\nSelect a module to run:");

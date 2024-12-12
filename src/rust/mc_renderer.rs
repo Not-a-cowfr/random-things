@@ -9,6 +9,7 @@ use image::buffer::ConvertBuffer;
 use image::{Rgb, RgbImage, RgbaImage, open};
 use rusttype::{Font, Scale, point};
 
+use crate::main;
 use crate::stuff::{input, menu};
 
 fn save(
@@ -304,7 +305,7 @@ fn draw_character(
 	*x += scaled_glyph.h_metrics().advance_width;
 }
 
-pub fn main() {
+pub fn start() {
 	let font_data_regular = include_bytes!("../assets/MinecraftRegular.otf");
 	let font_data_bold = include_bytes!("../assets/MinecraftBold.otf");
 	let font_data_italic = include_bytes!("../assets/MinecraftItalic.otf");
@@ -330,7 +331,7 @@ pub fn main() {
 		),
 	]);
 
-	let mut image = open("assets\\background.png")
+	let mut image = open("src/assets/background.png")
 		.expect("Failed to load background image")
 		.to_rgb8();
 
@@ -374,4 +375,6 @@ pub fn main() {
 	}
 
 	render_text(&text, &fonts, &mut image, scale);
+
+	main()
 }

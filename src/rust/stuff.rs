@@ -9,6 +9,7 @@ pub fn input(
 	} else {
 		print!("{}", prompt);
 	}
+
 	io::stdout().flush().unwrap();
 	let mut input = String::new();
 	io::stdin().read_line(&mut input).unwrap();
@@ -20,6 +21,7 @@ pub fn menu(options: Vec<&str>) -> u8 {
 	for (i, option) in options.iter().enumerate() {
 		println!("[{}] {}", i + 1, option);
 	}
+
 	let mut choice: u8 = 0;
 	let mut inputted_choice: String;
 	while !(choice <= options.len() as u8 && choice > 0) {
@@ -36,5 +38,6 @@ pub fn menu(options: Vec<&str>) -> u8 {
 			| Err(_) => println!("\nInvalid input, please enter a choice from the list."),
 		}
 	}
+
 	choice
 }
