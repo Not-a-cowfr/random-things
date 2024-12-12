@@ -8,12 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/MinecraftBold.otf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/MinecraftBoldItalic.otf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/MinecraftItalic.otf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/MinecraftRegular.otf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/minecraft.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/mc_renderer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/mc_renderer.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +139,7 @@
       <workItem from="1733710678562" duration="13000" />
       <workItem from="1733869785116" duration="5796000" />
       <workItem from="1733956014692" duration="6754000" />
-      <workItem from="1734024719569" duration="299000" />
+      <workItem from="1734024719569" duration="1235000" />
     </task>
     <servers />
   </component>

@@ -107,6 +107,8 @@ fn render_text(
 	let mut current_color = Rgb([255, 255, 255]);
 	let mut bold = false;
 	let mut italic = false;
+	let mut strikethrough = false;
+	let mut underline = false;
 
 	let mut chars = text.chars().peekable();
 
@@ -129,6 +131,8 @@ fn render_text(
 							scale,
 							bold,
 							italic,
+							strikethrough,
+							underline,
 							current_color,
 						);
 						continue;
@@ -143,6 +147,8 @@ fn render_text(
 							scale,
 							bold,
 							italic,
+							strikethrough,
+							underline,
 							current_color,
 						);
 						draw_character(
@@ -154,6 +160,8 @@ fn render_text(
 							scale,
 							bold,
 							italic,
+							strikethrough,
+							underline,
 							current_color,
 						);
 						continue;
@@ -169,6 +177,8 @@ fn render_text(
 					scale,
 					bold,
 					italic,
+					strikethrough,
+					underline,
 					current_color,
 				);
 				continue;
@@ -178,9 +188,13 @@ fn render_text(
 				match format_code {
 					| 'l' => bold = true,
 					| 'o' => italic = true,
+					| 'm' => strikethrough = true,
+					| 'n' => underline = true,
 					| 'r' => {
 						bold = false;
 						italic = false;
+						strikethrough = false;
+						underline = false;
 						current_color = Rgb([255, 255, 255]);
 					},
 					| _ if colors.contains_key(&format_code) => {
@@ -201,6 +215,8 @@ fn render_text(
 			scale,
 			bold,
 			italic,
+			strikethrough,
+			underline,
 			current_color,
 		);
 	}
@@ -234,6 +250,8 @@ fn draw_character(
 	scale: Scale,
 	bold: bool,
 	italic: bool,
+	strikethrough: bool,
+	underline: bool,
 	color: Rgb<u8>,
 ) {
 	let font_key = match (bold, italic) {
@@ -269,6 +287,32 @@ fn draw_character(
 				image.put_pixel(px, py, blended_color);
 			}
 		});
+
+		if strikethrough {
+			let y_strike = y - scale.y / 3.0;
+			for px in bounding_box.min.x..bounding_box.max.x {
+				if px >= 0
+					&& y_strike >= 0.0
+					&& px < image.width() as i32
+					&& y_strike < image.height() as f32
+				{
+					image.put_pixel(px as u32, y_strike as u32, color);
+				}
+			}
+		}
+
+		if underline {
+			let y_underline = y + scale.y / 10.0;
+			for px in bounding_box.min.x..bounding_box.max.x {
+				if px >= 0
+					&& y_underline >= 0.0
+					&& px < image.width() as i32
+					&& y_underline < image.height() as f32
+				{
+					image.put_pixel(px as u32, y_underline as u32, color);
+				}
+			}
+		}
 	}
 
 	*x += scaled_glyph.h_metrics().advance_width;
