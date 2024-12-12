@@ -30,10 +30,7 @@ fn save(
 }
 
 fn save_image_to_clipboard(image: &RgbImage) {
-	// convert RgbImage to RgbaImage
 	let rgba_image: RgbaImage = image.convert();
-
-	// convert RgbaImage to ImageData
 	let width = rgba_image.width() as usize;
 	let height = rgba_image.height() as usize;
 	let bytes = rgba_image.into_raw();
@@ -61,21 +58,14 @@ fn save_image_to_file(
 	image: &RgbImage,
 	path: &str,
 ) {
-	// Create the output directory if it doesn't exist
 	fs::create_dir_all("output").expect("Failed to create output directory");
-
-	// Save the image to the specified path within the output directory
 	let full_path = format!("output\\{}", path);
 	image.save(&full_path).expect("Failed to save image");
-
-	// Get the absolute path of the saved image
 	let absolute_path =
 		fs::canonicalize(Path::new(&full_path)).expect("Failed to get absolute path of image");
 	let display_path = absolute_path
 		.strip_prefix(r"\\?\")
 		.unwrap_or(&absolute_path);
-
-	// Print the success message with the file path
 	println!(
 		"\n\x1b[32mSuccess!\x1b[0m File saved at: {}",
 		display_path.display()
@@ -84,7 +74,7 @@ fn save_image_to_file(
 
 fn render_text(
 	text: &str,
-	font: &Font,
+	fonts: &HashMap<&str, Font>,
 	image: &mut RgbImage,
 	scale: Scale,
 ) -> RgbImage {
@@ -116,6 +106,7 @@ fn render_text(
 
 	let mut current_color = Rgb([255, 255, 255]);
 	let mut bold = false;
+	let mut italic = false;
 
 	let mut chars = text.chars().peekable();
 
@@ -129,34 +120,67 @@ fn render_text(
 						continue;
 					},
 					| '&' => {
-						draw_character('&', &font, image, &mut x, y, scale, bold, current_color);
-						continue;
-					},
-					| _ => {
-						draw_character('\\', &font, image, &mut x, y, scale, bold, current_color);
 						draw_character(
-							next_char,
-							&font,
+							'&',
+							fonts,
 							image,
 							&mut x,
 							y,
 							scale,
 							bold,
+							italic,
+							current_color,
+						);
+						continue;
+					},
+					| _ => {
+						draw_character(
+							'\\',
+							fonts,
+							image,
+							&mut x,
+							y,
+							scale,
+							bold,
+							italic,
+							current_color,
+						);
+						draw_character(
+							next_char,
+							fonts,
+							image,
+							&mut x,
+							y,
+							scale,
+							bold,
+							italic,
 							current_color,
 						);
 						continue;
 					},
 				}
 			} else {
-				draw_character('\\', &font, image, &mut x, y, scale, bold, current_color);
+				draw_character(
+					'\\',
+					fonts,
+					image,
+					&mut x,
+					y,
+					scale,
+					bold,
+					italic,
+					current_color,
+				);
 				continue;
 			}
 		} else if c == '&' || c == '§' {
 			if let Some(format_code) = chars.next() {
 				match format_code {
 					| 'l' => bold = true,
+					| 'o' => italic = true,
 					| 'r' => {
 						bold = false;
+						italic = false;
 						current_color = Rgb([255, 255, 255]);
 					},
 					| _ if colors.contains_key(&format_code) => {
@@ -168,7 +192,17 @@ fn render_text(
 			}
 		}
 
-		draw_character(c, &font, image, &mut x, y, scale, bold, current_color);
+		draw_character(
+			c,
+			fonts,
+			image,
+			&mut x,
+			y,
+			scale,
+			bold,
+			italic,
+			current_color,
+		);
 	}
 
 	let mut save_type: u8 = 0;
@@ -193,16 +227,25 @@ fn render_text(
 
 fn draw_character(
 	c: char,
-	font: &Font,
+	fonts: &HashMap<&str, Font>,
 	image: &mut RgbImage,
 	x: &mut f32,
 	y: f32,
 	scale: Scale,
 	bold: bool,
+	italic: bool,
 	color: Rgb<u8>,
 ) {
+	let font_key = match (bold, italic) {
+		| (true, true) => "bold_italic",
+		| (true, false) => "bold",
+		| (false, true) => "italic",
+		| (false, false) => "regular",
+	};
+
+	let font = &fonts[font_key];
 	let glyph = font.glyph(c);
-	let scaled_glyph = glyph.scaled(if bold { Scale::uniform(20.0) } else { scale });
+	let scaled_glyph = glyph.scaled(scale);
 	let positioned_glyph = scaled_glyph.clone().positioned(point(*x, y));
 
 	if let Some(bounding_box) = positioned_glyph.pixel_bounding_box() {
@@ -232,8 +275,30 @@ fn draw_character(
 }
 
 pub fn main() {
-	let font_data = include_bytes!("../assets/minecraft.ttf");
-	let font = Font::try_from_bytes(font_data as &[u8]).expect("Error loading font");
+	let font_data_regular = include_bytes!("../assets/MinecraftRegular.otf");
+	let font_data_bold = include_bytes!("../assets/MinecraftBold.otf");
+	let font_data_italic = include_bytes!("../assets/MinecraftItalic.otf");
+	let font_data_bold_italic = include_bytes!("../assets/MinecraftBoldItalic.otf");
+
+	let fonts = HashMap::from([
+		(
+			"regular",
+			Font::try_from_bytes(font_data_regular as &[u8]).expect("Error loading regular font"),
+		),
+		(
+			"bold",
+			Font::try_from_bytes(font_data_bold as &[u8]).expect("Error loading bold font"),
+		),
+		(
+			"italic",
+			Font::try_from_bytes(font_data_italic as &[u8]).expect("Error loading italic font"),
+		),
+		(
+			"bold_italic",
+			Font::try_from_bytes(font_data_bold_italic as &[u8])
+				.expect("Error loading bold italic font"),
+		),
+	]);
 
 	let mut image = open("assets\\background.png")
 		.expect("Failed to load background image")
@@ -243,5 +308,5 @@ pub fn main() {
 
 	let text = input("\nEnter text to render: ");
 
-	render_text(&text, &font, &mut image, scale);
+	render_text(&text, &fonts, &mut image, scale);
 }

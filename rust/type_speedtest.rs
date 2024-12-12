@@ -10,7 +10,7 @@ use serde::Deserialize;
 #[allow(dead_code)]
 #[derive(Deserialize)]
 struct Quote {
-	text:    String,
+	text:   String,
 	source: String,
 	length: usize,
 	id:     usize,
@@ -21,7 +21,7 @@ struct Quote {
 struct Phrases {
 	language: String,
 	groups:   Vec<(usize, usize)>,
-	quotes:    Vec<Quote>,
+	quotes:   Vec<Quote>,
 }
 
 fn get_phrase() -> String {
