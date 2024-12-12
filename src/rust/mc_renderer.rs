@@ -336,7 +336,42 @@ pub fn main() {
 
 	let scale = Scale::uniform(16.0);
 
-	let text = input("\nEnter text to render:", true);
+	let mut text = input("\nEnter text to render: (leave blank for help menu)", true);
+
+	if text.is_empty() {
+		println!(
+			"\x1b[1mHelp Menu:\x1b[0m\n\
+    \nColor Codes:\n\
+    \t\x1b[30m&0 or §0: Black\x1b[0m\n\
+    \t\x1b[34m&1 or §1: Dark Blue\x1b[0m\n\
+    \t\x1b[32m&2 or §2: Dark Green\x1b[0m\n\
+    \t\x1b[36m&3 or §3: Dark Aqua\x1b[0m\n\
+    \t\x1b[31m&4 or §4: Dark Red\x1b[0m\n\
+    \t\x1b[35m&5 or §5: Dark Purple\x1b[0m\n\
+    \t\x1b[33m&6 or §6: Gold\x1b[0m\n\
+    \t\x1b[37m&7 or §7: Gray\x1b[0m\n\
+    \t\x1b[90m&8 or §8: Dark Gray\x1b[0m\n\
+    \t\x1b[94m&9 or §9: Blue\x1b[0m\n\
+    \t\x1b[92m&a or §a: Green\x1b[0m\n\
+    \t\x1b[96m&b or §b: Aqua\x1b[0m\n\
+    \t\x1b[91m&c or §c: Red\x1b[0m\n\
+    \t\x1b[95m&d or §d: Light Purple\x1b[0m\n\
+    \t\x1b[93m&e or §e: Yellow\x1b[0m\n\
+    \t\x1b[97m&f or §f: White\x1b[0m\n\
+    \nFormatting Codes:\n\
+    \t\x1b[1m&l or §l: Bold\x1b[0m\n\
+    \t\x1b[3m&o or §o: Italic\x1b[0m\n\
+    \t\x1b[9m&m or §m: Strikethrough\x1b[0m\n\
+    \t\x1b[4m&n or §n: Underline\x1b[0m\n\
+    \t&r or §r: Reset all formatting\n\
+    \nSpecial Characters:\n\
+    \t\\& for &\n\
+    \t\\§ for §\n\
+    \t\\\\ for \\\n\
+	\t\\n for new line"
+		);
+		text = input("\nEnter text to render:", true);
+	}
 
 	render_text(&text, &fonts, &mut image, scale);
 }
