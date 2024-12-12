@@ -26,7 +26,7 @@ struct Phrases {
 
 fn get_phrase() -> String {
 	// TODO make api and use api to get phrases
-	let file = File::open("assets/phrases.json").expect("Failed to open phrases.json");
+	let file = File::open("../../assets/phrases.json").expect("Failed to open phrases.json");
 	let reader = BufReader::new(file);
 	let phrases: Phrases = serde_json::from_reader(reader).expect("Failed to parse JSON");
 
