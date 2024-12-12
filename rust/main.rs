@@ -32,7 +32,7 @@ pub fn main() {
 			println!("[{}] {}", i + 1 + modules.len(), name);
 		}
 
-		let input = input("");
+		let input = input("", false);
 
 		if let Ok(choice) = input.trim().parse::<usize>() {
 			if choice > 0 && choice <= modules.len() {

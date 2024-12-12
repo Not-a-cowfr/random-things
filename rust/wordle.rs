@@ -63,9 +63,9 @@ pub async fn main() {
 	let word: String = get_word(5).await;
 	let mut guess_count: u16 = 0;
 
-	println!("\nEnter your guess:");
+	print!("\nEnter your guess:");
 	loop {
-		let guess = input("");
+		let guess = input("", true);
 
 		print!("\x1b[1A\x1b[2K");
 		io::stdout().flush().unwrap();
@@ -75,7 +75,7 @@ pub async fn main() {
 
 		if guess == word {
 			println!(
-				"\nCongratulations! You guessed the word in {} attempts",
+				"\n\nCongratulations! You guessed the word in {} attempts",
 				guess_count
 			);
 			break;

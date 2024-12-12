@@ -9,7 +9,7 @@ use image::buffer::ConvertBuffer;
 use image::{Rgb, RgbImage, RgbaImage, open};
 use rusttype::{Font, Scale, point};
 
-use crate::stuff::input;
+use crate::stuff::{input, menu};
 
 fn save(
 	image: &RgbImage,
@@ -19,13 +19,7 @@ fn save(
 	match save_type {
 		| 1 => save_image_to_clipboard(image),
 		| 2 => save_image_to_file(image, path),
-		| _ => save(
-			image,
-			path,
-			input("Invalid choice, please choose again")
-				.parse::<u8>()
-				.unwrap(),
-		),
+		| _ => {},
 	}
 }
 
@@ -45,7 +39,7 @@ fn save_image_to_clipboard(image: &RgbImage) {
 		let clipboard = Clipboard::new();
 		if let Ok(mut clipboard) = clipboard {
 			if clipboard.set_image(image_data.clone()).is_ok() {
-				println!("Image copied to clipboard");
+				println!("\n\x1b[32mSuccess!\x1b[0m Image copied to clipboard");
 				break;
 			}
 		}
@@ -221,18 +215,10 @@ fn render_text(
 		);
 	}
 
-	let mut save_type: u8 = 0;
-	let mut input_type: String;
-	while save_type != 1 && save_type != 2 {
-		input_type = input("\n[1] Save to clipboard\n[2] Save as file");
-		match input_type.parse::<u8>() {
-			| Ok(parsed) => save_type = parsed,
-			| Err(_) => println!("Invalid input, please enter 1 or 2."),
-		}
-	}
+	let save_type = menu(vec!["Save to clipboard", "Save as file"]);
 
 	if save_type == 2 {
-		let path = input("\nEnter the filename to save the image as:");
+		let path = input("\nEnter the filename to save the image as:", true);
 		save(image, &path.add(".png"), save_type);
 	} else {
 		save(image, "output.png", save_type);
@@ -350,7 +336,7 @@ pub fn main() {
 
 	let scale = Scale::uniform(16.0);
 
-	let text = input("\nEnter text to render: ");
+	let text = input("\nEnter text to render:", true);
 
 	render_text(&text, &fonts, &mut image, scale);
 }

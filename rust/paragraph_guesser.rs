@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use rand::Rng;
 
-use crate::stuff::input;
+use crate::stuff::{input, menu};
 
 // sorted in order of most commonly used in text
 pub(crate) static CHAR_LIST: &[char] = &[
@@ -72,22 +72,14 @@ fn bogo_guess(
 }
 
 pub fn main() {
-	let mut show_progress: bool = true; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
-	let word = input("\nEnter a phrase: ");
+	let show_progress: bool; // show progress of guesses (hurts performance of guessing, like up to 1,000x slower)
+	let word = input("\nEnter a phrase:", true);
 
-	let mut save_type: u8 = 0;
-	let mut input_type: String;
-	while save_type != 1 && save_type != 2 {
-		input_type = input("\n[1] Show Progress (slow)\n[2] Hide progress (fast)");
-		match input_type.parse::<u8>() {
-			| Ok(parsed) => save_type = parsed,
-			| Err(_) => println!("Invalid input, please enter 1 or 2."),
-		}
-		match save_type {
-			| 1 => show_progress = true,
-			| 2 => show_progress = false,
-			| _ => show_progress = false,
-		}
+	let save_type = menu(vec!["Show Progress (slow)", "Hide progress (fast)"]);
+	match save_type {
+		| 1 => show_progress = true,
+		| 2 => show_progress = false,
+		| _ => show_progress = true,
 	}
 
 	let mut start = Instant::now();

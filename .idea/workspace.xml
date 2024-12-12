@@ -8,7 +8,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a52615d4-35df-4622-9bb0-20aae73141bc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/mc_renderer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/mc_renderer.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/paragraph_guesser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/paragraph_guesser.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/stuff.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/stuff.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/wordle.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/wordle.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +143,7 @@
       <workItem from="1733710678562" duration="13000" />
       <workItem from="1733869785116" duration="5796000" />
       <workItem from="1733956014692" duration="6754000" />
-      <workItem from="1734024719569" duration="1851000" />
+      <workItem from="1734024719569" duration="6028000" />
     </task>
     <servers />
   </component>
