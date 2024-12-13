@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use rand::Rng;
 
@@ -16,25 +16,41 @@ pub(crate) static CHAR_LIST: &[char] = &[
 
 fn to_string(vec: Vec<char>) -> String { vec.iter().collect::<String>() }
 
-fn smart_guess(
+fn smart_guess_with_progress(
 	word: String,
 	local_char_list: &[char],
-	show_progress: bool,
+	inefficient_timeout: u64,
+	efficiency: u16,
 ) -> Vec<char> {
 	let mut guess: Vec<char> = Vec::new();
-	let print_progress = if show_progress {
-		Some(|guess: &Vec<char>, char: &char| {
-			println!("[smart guess]\t{}{}", to_string(guess.clone()), char)
-		})
-	} else {
-		None
-	};
+	let start_time = Instant::now();
+	let mut guess_count: usize = 0;
 
 	for character in word.chars() {
 		for char in local_char_list {
-			if let Some(print) = &print_progress {
-				print(&guess, char);
+			if start_time.elapsed().as_secs() < inefficient_timeout {
+				println!("[smart guess]\t{}{}", to_string(guess.clone()), char);
+			} else if guess_count % efficiency as usize == 0 {
+				println!("[smart guess]\t{}{}", to_string(guess.clone()), char);
 			}
+			if character == *char {
+				guess.push(character);
+				break;
+			}
+			guess_count += 1;
+		}
+	}
+	guess
+}
+
+fn smart_guess_without_progress(
+	word: String,
+	local_char_list: &[char],
+) -> Vec<char> {
+	let mut guess: Vec<char> = Vec::new();
+
+	for character in word.chars() {
+		for char in local_char_list {
 			if character == *char {
 				guess.push(character);
 				break;
@@ -44,28 +60,45 @@ fn smart_guess(
 	guess
 }
 
-fn bogo_guess(
+fn bogo_guess_with_progress(
 	word: String,
 	local_char_list: &[char],
-	show_progress: bool,
+	inefficient_timeout: u64,
+	efficiency: u16,
 ) -> Vec<char> {
 	let mut guess: Vec<char> = Vec::new();
-	let print_progress = if show_progress {
-		Some(|guess: &Vec<char>, char: &char| {
-			println!("[bogo guess]\t{}{}", to_string(guess.clone()), char)
-		})
-	} else {
-		None
-	};
+	let start_time = Instant::now();
+	let mut guess_count: usize = 0;
 
 	for character in word.chars() {
 		let mut random_char: char = ' ';
 		while character != random_char {
 			let random_index = rand::thread_rng().gen_range(0..local_char_list.len());
 			random_char = local_char_list[random_index];
-			if let Some(print) = &print_progress {
-				print(&guess, &random_char);
+
+			if start_time.elapsed().as_secs() < inefficient_timeout {
+				println!("[bogo guess]\t{}{}", to_string(guess.clone()), random_char);
+			} else if guess_count % efficiency as usize == 0 {
+				println!("[bogo guess]\t{}{}", to_string(guess.clone()), random_char);
 			}
+			guess_count += 1;
+		}
+		guess.push(random_char);
+	}
+	guess
+}
+
+fn bogo_guess_without_progress(
+	word: String,
+	local_char_list: &[char],
+) -> Vec<char> {
+	let mut guess: Vec<char> = Vec::new();
+
+	for character in word.chars() {
+		let mut random_char: char = ' ';
+		while character != random_char {
+			let random_index = rand::thread_rng().gen_range(0..local_char_list.len());
+			random_char = local_char_list[random_index];
 		}
 		guess.push(random_char);
 	}
@@ -83,13 +116,49 @@ pub fn start() {
 		| _ => show_progress = true,
 	}
 
-	let mut start = Instant::now();
-	bogo_guess(word.clone(), CHAR_LIST, show_progress);
-	let bogo_time = start.elapsed();
+	let bogo_time: Duration;
+	let smart_time: Duration;
+	if show_progress {
+		let start_efficient_mode: u64;
+		let start_efficient_mode_input = input(
+			"\nHow long should it show full progress before switching to a more efficient method (won't show every single step)?",
+			true,
+		);
+		match start_efficient_mode_input.parse::<u64>() {
+			| Ok(parsed) => start_efficient_mode = parsed,
+			| Err(_) => {
+				println!("Invalid choice! Defaulting to 10 seconds");
+				start_efficient_mode = 10;
+			},
+		}
 
-	start = Instant::now();
-	smart_guess(word.clone(), CHAR_LIST, show_progress);
-	let smart_time = start.elapsed();
+		let efficiency: u16;
+		let efficiency_input = input(
+			"\nHow many progress checks it skips after enabling efficiency mode:",
+			true,
+		);
+		match efficiency_input.parse::<u16>() {
+			| Ok(parsed) => efficiency = parsed,
+			| Err(_) => {
+				println!("Invalid Choice! Defaulting to 10 lines!");
+				efficiency = 10;
+			},
+		}
+
+		let mut start = Instant::now();
+		bogo_guess_with_progress(word.clone(), CHAR_LIST, start_efficient_mode, efficiency);
+		bogo_time = start.elapsed();
+		start = Instant::now();
+		smart_guess_with_progress(word.clone(), CHAR_LIST, start_efficient_mode, efficiency);
+		smart_time = start.elapsed();
+	} else {
+		let mut start = Instant::now();
+		bogo_guess_without_progress(word.clone(), CHAR_LIST);
+		bogo_time = start.elapsed();
+		start = Instant::now();
+		smart_guess_without_progress(word.clone(), CHAR_LIST);
+		smart_time = start.elapsed();
+	}
 
 	println!("\nBogo Guess finished in: {:?}", bogo_time);
 	println!("Smart Guess finished in: {:?}", smart_time);
@@ -117,28 +186,28 @@ mod tests {
 	#[test]
 	fn smart_guess_correct() {
 		let word = generate_random_string(200, CHAR_LIST);
-		let guessed = smart_guess(word.clone(), CHAR_LIST, false);
+		let guessed = smart_guess_without_progress(word.clone(), CHAR_LIST);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn bogo_guess_correct() {
 		let word = generate_random_string(200, CHAR_LIST);
-		let guessed = bogo_guess(word.clone(), CHAR_LIST, false);
+		let guessed = bogo_guess_without_progress(word.clone(), CHAR_LIST);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn smart_guess_handles_empty_word() {
 		let word = "".to_string();
-		let guessed = smart_guess(word.clone(), CHAR_LIST, false);
+		let guessed = smart_guess_without_progress(word.clone(), CHAR_LIST);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 
 	#[test]
 	fn bogo_guess_handles_empty_word() {
 		let word = "".to_string();
-		let guessed = bogo_guess(word.clone(), CHAR_LIST, false);
+		let guessed = bogo_guess_without_progress(word.clone(), CHAR_LIST);
 		assert_eq!(guessed, word.chars().collect::<Vec<char>>());
 	}
 }
