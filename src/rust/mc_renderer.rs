@@ -1,12 +1,17 @@
 use std::collections::HashMap;
+use std::io::{Write, stdout};
 use std::ops::Add;
 use std::path::Path;
 use std::time::Duration;
 use std::{fs, thread};
 
 use arboard::{Clipboard, ImageData};
+use crossterm::event;
+use crossterm::event::{Event, KeyCode, KeyEventKind};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use image::buffer::ConvertBuffer;
-use image::{Rgb, RgbImage, RgbaImage, open};
+use image::{GenericImage, Rgb, RgbImage, RgbaImage, open};
+use minifb::{Window, WindowOptions};
 use rusttype::{Font, Scale, point};
 
 use crate::main;
@@ -146,19 +151,6 @@ fn render_text(
 							underline,
 							current_color,
 						);
-						draw_character(
-							next_char,
-							fonts,
-							image,
-							&mut x,
-							y,
-							scale,
-							bold,
-							italic,
-							strikethrough,
-							underline,
-							current_color,
-						);
 						continue;
 					},
 				}
@@ -215,16 +207,6 @@ fn render_text(
 			current_color,
 		);
 	}
-
-	let save_type = menu(vec!["Save to clipboard", "Save as file"]);
-
-	if save_type == 2 {
-		let path = input("\nEnter the filename to save the image as:", true);
-		save(image, &path.add(".png"), save_type);
-	} else {
-		save(image, "output.png", save_type);
-	}
-
 	image.clone()
 }
 
@@ -331,50 +313,118 @@ pub fn start() {
 		),
 	]);
 
-	let mut image = open("src/assets/background.png")
+	let background_image = open("src/assets/background.png")
 		.expect("Failed to load background image")
 		.to_rgb8();
+	let (width, height) = background_image.dimensions();
+	let mut image = background_image.clone();
 
 	let scale = Scale::uniform(16.0);
 
-	let mut text = input("\nEnter text to render: (leave blank for help menu)", true);
+	let mut text = String::new();
+	let mut window = Window::new(
+		"Text Renderer",
+		width as usize,
+		height as usize,
+		WindowOptions::default(),
+	)
+	.unwrap_or_else(|e| {
+		panic!("{}", e);
+	});
 
-	if text.is_empty() {
-		println!(
-			"\x1b[1mHelp Menu:\x1b[0m\n\
-    \nColor Codes:\n\
-    \t\x1b[30m&0 or §0: Black\x1b[0m\n\
-    \t\x1b[34m&1 or §1: Dark Blue\x1b[0m\n\
-    \t\x1b[32m&2 or §2: Dark Green\x1b[0m\n\
-    \t\x1b[36m&3 or §3: Dark Aqua\x1b[0m\n\
-    \t\x1b[31m&4 or §4: Dark Red\x1b[0m\n\
-    \t\x1b[35m&5 or §5: Dark Purple\x1b[0m\n\
-    \t\x1b[33m&6 or §6: Gold\x1b[0m\n\
-    \t\x1b[37m&7 or §7: Gray\x1b[0m\n\
-    \t\x1b[90m&8 or §8: Dark Gray\x1b[0m\n\
-    \t\x1b[94m&9 or §9: Blue\x1b[0m\n\
-    \t\x1b[92m&a or §a: Green\x1b[0m\n\
-    \t\x1b[96m&b or §b: Aqua\x1b[0m\n\
-    \t\x1b[91m&c or §c: Red\x1b[0m\n\
-    \t\x1b[95m&d or §d: Light Purple\x1b[0m\n\
-    \t\x1b[93m&e or §e: Yellow\x1b[0m\n\
-    \t\x1b[97m&f or §f: White\x1b[0m\n\
-    \nFormatting Codes:\n\
-    \t\x1b[1m&l or §l: Bold\x1b[0m\n\
-    \t\x1b[3m&o or §o: Italic\x1b[0m\n\
-    \t\x1b[9m&m or §m: Strikethrough\x1b[0m\n\
-    \t\x1b[4m&n or §n: Underline\x1b[0m\n\
-    \t&r or §r: Reset all formatting\n\
-    \nSpecial Characters:\n\
-    \t\\& for &\n\
-    \t\\§ for §\n\
-    \t\\\\ for \\\n\
-	\t\\n for new line"
-		);
-		text = input("\nEnter text to render:", true);
+	println!(
+		"\x1b[1mHelp Menu:\x1b[0m\n\
+        \nColor Codes:\n\
+        \t\x1b[30m&0 or §0: Black\x1b[0m\n\
+        \t\x1b[34m&1 or §1: Dark Blue\x1b[0m\n\
+        \t\x1b[32m&2 or §2: Dark Green\x1b[0m\n\
+        \t\x1b[36m&3 or §3: Dark Aqua\x1b[0m\n\
+        \t\x1b[31m&4 or §4: Dark Red\x1b[0m\n\
+        \t\x1b[35m&5 or §5: Dark Purple\x1b[0m\n\
+        \t\x1b[33m&6 or §6: Gold\x1b[0m\n\
+        \t\x1b[37m&7 or §7: Gray\x1b[0m\n\
+        \t\x1b[90m&8 or §8: Dark Gray\x1b[0m\n\
+        \t\x1b[94m&9 or §9: Blue\x1b[0m\n\
+        \t\x1b[92m&a or §a: Green\x1b[0m\n\
+        \t\x1b[96m&b or §b: Aqua\x1b[0m\n\
+        \t\x1b[91m&c or §c: Red\x1b[0m\n\
+        \t\x1b[95m&d or §d: Light Purple\x1b[0m\n\
+        \t\x1b[93m&e or §e: Yellow\x1b[0m\n\
+        \t\x1b[97m&f or §f: White\x1b[0m\n\
+        \nFormatting Codes:\n\
+        \t\x1b[1m&l or §l: Bold\x1b[0m\n\
+        \t\x1b[3m&o or §o: Italic\x1b[0m\n\
+        \t\x1b[9m&m or §m: Strikethrough\x1b[0m\n\
+        \t\x1b[4m&n or §n: Underline\x1b[0m\n\
+        \t&r or §r: Reset all formatting\n\
+        \nSpecial Characters:\n\
+        \t\\& for &\n\
+        \t\\§ for §\n\
+        \t\\\\ for \\\n\
+        \t\\n for new line\n"
+	);
+
+	enable_raw_mode().expect("Failed to enable raw mode");
+
+	loop {
+		if event::poll(Duration::from_millis(100)).unwrap() {
+			if let Event::Key(key_event) = event::read().unwrap() {
+				if key_event.kind == KeyEventKind::Press {
+					match key_event.code {
+						| KeyCode::Char(c) => {
+							text.push(c);
+						},
+						| KeyCode::Backspace => {
+							text.pop();
+						},
+						| KeyCode::Enter => {
+							break;
+						},
+						| _ => {},
+					}
+
+					print!("\r\x1b[2K{}", text);
+					stdout().flush().unwrap();
+
+					image
+						.copy_from(&background_image, 0, 0)
+						.expect("Failed to copy background image");
+
+					let rendered_image = render_text(&text, &fonts, &mut image, scale);
+					let buffer: Vec<u32> = rendered_image
+						.pixels()
+						.map(|p| {
+							let [r, g, b] = p.0;
+							((r as u32) << 16) | ((g as u32) << 8) | (b as u32)
+						})
+						.collect();
+					window
+						.update_with_buffer(
+							&buffer,
+							image.width() as usize,
+							image.height() as usize,
+						)
+						.unwrap();
+				}
+			}
+		}
 	}
 
-	render_text(&text, &fonts, &mut image, scale);
+	disable_raw_mode().expect("Failed to disable raw mode");
+
+	println!();
+	let save_type = menu(vec!["Save to clipboard", "Save as file"]);
+
+	match save_type {
+		| 1 => {
+			save(&image, "", save_type);
+		},
+		| 2 => {
+			let path = input("\nEnter the filename to save the image as:", true);
+			save(&image, &path.add(".png"), save_type);
+		},
+		| _ => {},
+	}
 
 	main()
 }
