@@ -7,6 +7,9 @@ use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use rand::seq::IndexedRandom;
 use serde::Deserialize;
 
+use crate::main;
+
+#[allow(dead_code)]
 #[derive(Deserialize)]
 struct Quote {
 	text:   String,
@@ -15,6 +18,7 @@ struct Quote {
 	id:     usize,
 }
 
+#[allow(dead_code)]
 #[derive(Deserialize)]
 struct Phrases {
 	language: String,
@@ -23,7 +27,8 @@ struct Phrases {
 }
 
 fn get_phrase() -> String {
-	let file = File::open("assets/phrases.json").expect("Failed to open phrases.json");
+	// TODO make api and use api to get phrases
+	let file = File::open("src/assets/phrases.json").expect("Failed to open phrases.json");
 	let reader = BufReader::new(file);
 	let phrases: Phrases = serde_json::from_reader(reader).expect("Failed to parse JSON");
 
@@ -86,7 +91,7 @@ fn calculate_wpm(
 	(wpm, word_count)
 }
 
-pub fn main() {
+pub fn start() {
 	enable_raw_mode().unwrap();
 	let mut stdout = io::stdout();
 	let phrase = get_phrase().chars().collect::<Vec<_>>();
@@ -115,6 +120,7 @@ pub fn main() {
 								&mut incorrect_count,
 								&mut total_keystrokes,
 							);
+							stdout.flush().unwrap();
 						},
 						| KeyCode::Backspace => {
 							input.pop();
@@ -126,15 +132,20 @@ pub fn main() {
 								&mut incorrect_count,
 								&mut total_keystrokes,
 							);
+							stdout.flush().unwrap();
 						},
 						| KeyCode::Esc => {
+							stdout.flush().unwrap();
 							break;
 						},
-						| _ => {},
+						| _ => {
+							stdout.flush().unwrap();
+						},
 					}
 				}
 			}
 		}
+		stdout.flush().unwrap();
 
 		if input.len() >= phrase.len() {
 			break;
@@ -150,6 +161,8 @@ pub fn main() {
 	println!("\nTime taken: {:.2?}", duration);
 	println!("Accuracy: {:.2}%", accuracy);
 	println!("WPM: {:.2}", wpm);
+
+	main()
 }
 
 #[cfg(test)]

@@ -4,4 +4,5 @@ target/
 *.pdb
 *.db
 *.env
-output.png
+output/
+.idea/workspace.xml

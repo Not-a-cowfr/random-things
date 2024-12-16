@@ -1,25 +1,27 @@
 use std::future::Future;
-use std::io;
 use std::pin::Pin;
 
 use tokio::runtime::Runtime;
 
+use crate::stuff::input;
+
 mod mc_renderer;
 mod paragraph_guesser;
+mod stuff;
 mod type_speedtest;
 mod wordle;
 
 pub fn main() {
-	// displayname, function
+	// display name, function
 	let modules: Vec<(&str, fn())> = vec![
-		("Paragraph Guesser", paragraph_guesser::main),
-		("Minecraft Text Renderer", mc_renderer::main),
-		("Typing Speed Test", type_speedtest::main),
+		("Paragraph Guesser", paragraph_guesser::start),
+		("Minecraft Text Renderer", mc_renderer::start),
+		("Typing Speed Test", type_speedtest::start),
 	];
 
 	#[allow(clippy::type_complexity)]
 	let async_modules: Vec<(&str, fn() -> Pin<Box<dyn Future<Output = ()> + Send>>)> =
-		vec![("Wordle", || Box::pin(wordle::main()))];
+		vec![("Wordle", || Box::pin(wordle::start()))];
 
 	loop {
 		println!("\nSelect a module to run:");
@@ -30,10 +32,7 @@ pub fn main() {
 			println!("[{}] {}", i + 1 + modules.len(), name);
 		}
 
-		let mut input = String::new();
-		io::stdin()
-			.read_line(&mut input)
-			.expect("Failed to read line");
+		let input = input("", false);
 
 		if let Ok(choice) = input.trim().parse::<usize>() {
 			if choice > 0 && choice <= modules.len() {
