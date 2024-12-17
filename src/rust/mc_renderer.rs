@@ -288,10 +288,13 @@ fn draw_character(
 }
 
 pub fn start() {
-	let font_data_regular = include_bytes!("../assets/MinecraftRegular.otf");
-	let font_data_bold = include_bytes!("../assets/MinecraftBold.otf");
-	let font_data_italic = include_bytes!("../assets/MinecraftItalic.otf");
-	let font_data_bold_italic = include_bytes!("../assets/MinecraftBoldItalic.otf");
+	let current_dir = std::env::current_dir().expect("Failed to get current directory");
+	println!("Checking for font files in directory: {:?}", current_dir);
+
+	let font_data_regular = include_bytes!("assets/MinecraftRegular.otf");
+	let font_data_bold = include_bytes!("assets/MinecraftBold.otf");
+	let font_data_italic = include_bytes!("assets/MinecraftItalic.otf");
+	let font_data_bold_italic = include_bytes!("assets/MinecraftBoldItalic.otf");
 
 	let fonts = HashMap::from([
 		(
@@ -313,7 +316,7 @@ pub fn start() {
 		),
 	]);
 
-	let background_image = open("src/assets/background.png")
+	let background_image = open("../assets/background.png")
 		.expect("Failed to load background image")
 		.to_rgb8();
 	let (width, height) = background_image.dimensions();
